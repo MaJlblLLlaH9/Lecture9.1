@@ -1,19 +1,14 @@
 package com.example.lecture8
 
-class ViewModel(private val model: Model<Any, Any>) {
+class ViewModel(private val model: Model) {
 
     private var callback: TextCallback? = null
 
     fun init(callback: TextCallback) {
         this.callback = callback
-        model.init(object : ResultCallback<Any, Any> {
-            override fun provideSuccess(data: Any) {
-                callback.provideText("Success")
-            }
-
-            override fun provideError(error: Any) {
-                callback.provideText("Error")
-            }
+        model.init(object : ResultCallback {
+            override fun provideSuccess(data: Joke) = callback.provideText(data.getJokeUi())
+            override fun provideError(error: JokeFailure) = callback.provideText(error.getMessage())
         })
     }
 
@@ -31,16 +26,18 @@ interface TextCallback {
     fun provideText(text: String)
 }
 
-interface Model<S, E> {
+interface Model {
 
     fun getJoke()
 
-    fun init(callback: ResultCallback<S, E>)
+    fun init(callback: ResultCallback)
+
     fun clear()
 }
 
-interface ResultCallback<S, E> {
+interface ResultCallback {
 
-    fun provideSuccess(data: S)
-    fun provideError(error: E)
+    fun provideSuccess(data: Joke)
+
+    fun provideError(error: JokeFailure)
 }

@@ -3,7 +3,6 @@ package com.example.lecture8
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.app.Application
 import android.widget.*
 
 class MainActivity : AppCompatActivity() {
