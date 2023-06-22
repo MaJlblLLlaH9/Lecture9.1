@@ -6,12 +6,37 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Joke or error" />
+        android:padding="@dimen/padding"
+        android:text="@string/show_favorite_joke" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="@dimen/padding"
+            tools:text="@string/joke_or_error" />
+
+
+        <ImageButton
+            android:id="@+id/changeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="?selectableItemBackground"
+            tools:src="@android:drawable/ic_input_add" />
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -24,6 +49,6 @@
         android:id="@+id/buttonView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Get joke" />
+        android:text="@string/get_joke" />
 
 </LinearLayout>

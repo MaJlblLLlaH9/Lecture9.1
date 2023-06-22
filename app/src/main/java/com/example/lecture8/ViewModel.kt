@@ -1,15 +1,30 @@
 package com.example.lecture8
 
+import androidx.annotation.DrawableRes
+
 class ViewModel(private val model: Model) {
 
-    private var callback: TextCallback? = null
+    private var dataCallback: DataCallback? = null
 
-    fun init(callback: TextCallback) {
-        this.callback = callback
-        model.init(object : ResultCallback {
-            override fun provideSuccess(data: Joke) = callback.provideText(data.getJokeUi())
-            override fun provideError(error: JokeFailure) = callback.provideText(error.getMessage())
-        })
+    private var jokeCallback = object : JokeCallback {
+        override fun provide(joke: Joke) {
+            dataCallback?.let {
+                joke.map(it)
+            }
+        }
+    }
+
+    fun chooseFavorites(favorites: Boolean) {
+        model.chooseDataSource(favorites)
+    }
+
+    fun init(callback: DataCallback) {
+        dataCallback = callback
+        model.init(jokeCallback)
+    }
+
+    fun changeJokeStatus() {
+        model.changeJokeStatus(jokeCallback)
     }
 
     fun getJoke() {
@@ -17,27 +32,32 @@ class ViewModel(private val model: Model) {
     }
 
     fun clear() {
-        callback = null
+        dataCallback = null
         model.clear()
     }
 }
 
-interface TextCallback {
+interface DataCallback {
     fun provideText(text: String)
+
+    fun provideIconRes(@DrawableRes id: Int)
+
 }
 
 interface Model {
 
+    fun chooseDataSource(cached: Boolean)
+
+    fun changeJokeStatus(jokeCallback: JokeCallback)
+
     fun getJoke()
 
-    fun init(callback: ResultCallback)
+    fun init(callback: JokeCallback)
 
     fun clear()
 }
 
-interface ResultCallback {
+interface JokeCallback {
 
-    fun provideSuccess(data: Joke)
-
-    fun provideError(error: JokeFailure)
+    fun provide(joke: Joke)
 }

@@ -2,9 +2,10 @@ package com.example.lecture8
 
 import android.app.Application
 import com.google.gson.Gson
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedInputStream
 import java.io.InputStreamReader
-import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.UnknownHostException
@@ -15,64 +16,44 @@ class JokeApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        viewModel = ViewModel(BaseModel(BaseJokeService(Gson()), BaseResourceManager(this)))
+        val retrofit = Retrofit.Builder().baseUrl("https://www.google.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        viewModel = ViewModel(
+            BaseModel(
+                TestCacheDataSource(),
+                BaseCloudDataSource(retrofit.create(JokeService::class.java)),
+                BaseResourceManager(this)
+            )
+        )
     }
 }
 
-//class TestModel(resourceManager: ResourceManager) : Model {
-//    private var callback: ResultCallback? = null
-//    private var count = 0
-//    private val noConnection = NoConnection(resourceManager)
-//    private val serviceUnavailable = ServiceUnavailable(resourceManager)
-//
-//    override fun getJoke() {
+//class BaseJokeService(private val gson: Gson) : JokeService {
+//    override fun getJoke(callback: JokeCloudCallback) {
 //        Thread {
-//            Thread.sleep(1000)
-//            when (count) {
-//                0 -> callback?.provideSuccess(Joke("testText", "testPunchline"))
-//                1 -> callback?.provideError(noConnection)
-//                2 -> callback?.provideError(serviceUnavailable)
+//            var connection: HttpURLConnection? = null
+//            try {
+//                var url = URL(JOKE_URL)
+//                connection = url.openConnection() as HttpURLConnection
+//                InputStreamReader(BufferedInputStream(connection.inputStream)).use {
+//                    val line: String = it.readText()
+//                    val dto = gson.fromJson(line, JokeServerModel::class.java)
+//                    callback.provide(dto)
+//                }
+//            } catch (e: Exception) {
+//                if (e is UnknownHostException)
+//                    callback.fail(ErrorType.NO_CONNECTION)
+//                else
+//                    callback.fail(ErrorType.SERVICE_UNAVAILABLE)
+//            } finally {
+//                connection?.disconnect()
 //            }
-//            count++
-//            if (count == 3) count = 0
 //        }.start()
 //    }
 //
-//    override fun init(callback: ResultCallback) {
-//        this.callback = callback
+//    private companion object {
+//        const val JOKE_URL = "https://official-joke-api.appspot.com/random_joke"
 //    }
-//
-//    override fun clear() {
-//        callback = null
-//    }
-//
 //}
-
-class BaseJokeService(private val gson: Gson) : JokeService {
-    override fun getJoke(callback: ServiceCallback) {
-        Thread {
-            var connection: HttpURLConnection? = null
-            try {
-                var url = URL(JOKE_URL)
-                connection = url.openConnection() as HttpURLConnection
-                InputStreamReader(BufferedInputStream(connection.inputStream)).use {
-                    val line: String = it.readText()
-                    val dto = gson.fromJson(line, JokeDTO::class.java)
-                    callback.returnSuccess(dto)
-                }
-            } catch (e: Exception) {
-                if (e is UnknownHostException)
-                    callback.returnError(ErrorType.NO_CONNECTION)
-                else
-                    callback.returnError(ErrorType.OTHER)
-            } finally {
-                connection?.disconnect()
-            }
-        }.start()
-    }
-
-    private companion object {
-        const val JOKE_URL = "https://official-joke-api.appspot.com/random_joke"
-    }
-}
 
