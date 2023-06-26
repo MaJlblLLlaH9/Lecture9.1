@@ -10,7 +10,7 @@ interface JokeService {
 
 interface JokeCloudCallback {
 
-    fun provide(data: JokeServerModel)
+    fun provide(data: Joke)
 
     fun fail(type: ErrorType)
 }

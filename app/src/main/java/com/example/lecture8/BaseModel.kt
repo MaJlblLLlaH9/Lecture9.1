@@ -12,14 +12,14 @@ class BaseModel(
     private val serviceUnavailable by lazy { ServiceUnavailable(resourceManager) }
     private var getJokeFromCache = false
 
-    private var cachedJokeServerModel: JokeServerModel? = null
+    private var cachedJoke: Joke? = null
 
     override fun chooseDataSource(cached: Boolean) {
         getJokeFromCache = cached
     }
 
     override fun changeJokeStatus(jokeCallback: JokeCallback) {
-        cachedJokeServerModel?.change(cacheDataSource)?.let {
+        cachedJoke?.change(cacheDataSource)?.let {
             jokeCallback.provide(it)
         }
     }
@@ -27,27 +27,27 @@ class BaseModel(
     override fun getJoke() {
         if (getJokeFromCache) {
             cacheDataSource.getJoke(object : JokeCacheCallback {
-                override fun provide(jokeServerModel: JokeServerModel) {
-                    jokeCallback?.provide(jokeServerModel.toFavoriteJoke())
+                override fun provide(joke: Joke) {
+                    jokeCallback?.provide(joke.toFavoriteJoke())
                 }
 
                 override fun fail() {
-                    jokeCallback?.provide(FailedJoke(noCachedJokes.getMessage()))
+                    jokeCallback?.provide(FailedJokeUiModel(noCachedJokes.getMessage()))
                 }
 
             })
         } else {
             cloudDataSource.getJoke(object : JokeCloudCallback {
-                override fun provide(data: JokeServerModel) {
-                    cachedJokeServerModel = data
+                override fun provide(data: Joke) {
+                    cachedJoke = data
                     jokeCallback?.provide(data.toBaseJoke())
                 }
 
                 override fun fail(type: ErrorType) {
-                    cachedJokeServerModel = null
+                    cachedJoke = null
                     val failure =
                         if (type == ErrorType.NO_CONNECTION) noConnection else serviceUnavailable
-                    jokeCallback?.provide(FailedJoke(failure.getMessage()))
+                    jokeCallback?.provide(FailedJokeUiModel(failure.getMessage()))
                 }
 
             })

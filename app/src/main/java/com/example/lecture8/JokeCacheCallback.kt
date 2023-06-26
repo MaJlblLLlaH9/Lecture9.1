@@ -1,7 +1,6 @@
 package com.example.lecture8
 
 interface JokeCacheCallback {
-    fun provide(jokeServerModel: JokeServerModel)
-
+    fun provide(jokeServerModel: Joke)
     fun fail()
 }

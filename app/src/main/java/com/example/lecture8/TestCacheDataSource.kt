@@ -2,7 +2,7 @@ package com.example.lecture8
 
 class TestCacheDataSource : CacheDataSource {
 
-    private val list = ArrayList<Pair<Int, JokeServerModel>>()
+    private val list = ArrayList<Pair<Int, Joke>>()
 
     override fun getJoke(jokeCacheCallback: JokeCacheCallback) {
         if (list.isEmpty())
@@ -11,7 +11,7 @@ class TestCacheDataSource : CacheDataSource {
             jokeCacheCallback.provide(list.random().second)
     }
 
-    override fun addOrRemove(id: Int, joke: JokeServerModel): Joke {
+    override fun addOrRemove(id: Int, joke: Joke): JokeUiModel {
         val found = list.find { it.first == id }
         return if (found != null) {
             val joke = found.second.toBaseJoke()
