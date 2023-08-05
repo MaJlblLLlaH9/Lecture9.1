@@ -16,5 +16,6 @@ class Joke(
             it.text = text
         }
     }
-    fun change(cacheDataSource: CacheDataSource) = cacheDataSource.addOrRemove(id, this)
+
+    suspend fun change(cacheDataSource: ChangeJokeStatus) = cacheDataSource.addOrRemove(id, this)
 }

@@ -18,39 +18,36 @@ class BaseModel(
         getJokeFromCache = cached
     }
 
-    override fun changeJokeStatus(jokeCallback: JokeCallback) {
-        cachedJoke?.change(cacheDataSource)?.let {
-            jokeCallback.provide(it)
-        }
-    }
+    override suspend fun changeJokeStatus(): JokeUiModel? = cachedJoke?.change(cacheDataSource)
 
-    override fun getJoke() {
+    override suspend fun getJoke(): JokeUiModel {
         if (getJokeFromCache) {
-            cacheDataSource.getJoke(object : JokeCacheCallback {
-                override fun provide(joke: Joke) {
-                    jokeCallback?.provide(joke.toFavoriteJoke())
+            return when (val result = cacheDataSource.getJoke()) {
+                is Result.Success<Joke> -> result.data.let {
+                    cachedJoke = it
+                    it.toFavoriteJoke()
                 }
-
-                override fun fail() {
-                    jokeCallback?.provide(FailedJokeUiModel(noCachedJokes.getMessage()))
-                }
-
-            })
-        } else {
-            cloudDataSource.getJoke(object : JokeCloudCallback {
-                override fun provide(data: Joke) {
-                    cachedJoke = data
-                    jokeCallback?.provide(data.toBaseJoke())
-                }
-
-                override fun fail(type: ErrorType) {
+                is Result.Error -> {
                     cachedJoke = null
-                    val failure =
-                        if (type == ErrorType.NO_CONNECTION) noConnection else serviceUnavailable
-                    jokeCallback?.provide(FailedJokeUiModel(failure.getMessage()))
+                    FailedJokeUiModel(noCachedJokes.getMessage())
                 }
-
-            })
+            }
+        } else {
+            return when (val result = cloudDataSource.getJoke()) {
+                is Result.Success<JokeServerModel> -> {
+                    result.data.toJoke().let {
+                        cachedJoke = it
+                        it.toBaseJoke()
+                    }
+                }
+                is Result.Error<ErrorType> -> {
+                    cachedJoke = null
+                    val failure = if (result.exception == ErrorType.NO_CONNECTION)
+                        noConnection
+                    else serviceUnavailable
+                    FailedJokeUiModel(failure.getMessage())
+                }
+            }
         }
     }
 

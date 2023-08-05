@@ -1,5 +1,5 @@
 package com.example.lecture8
 
 interface CloudDataSource {
-    fun getJoke(callback: JokeCloudCallback)
+    suspend fun getJoke(): Result<JokeServerModel, ErrorType>
 }

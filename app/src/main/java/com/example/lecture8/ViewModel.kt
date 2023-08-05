@@ -1,8 +1,11 @@
 package com.example.lecture8
 
 import androidx.annotation.DrawableRes
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
-class ViewModel(private val model: Model) {
+class ViewModel(private val model: Model) : ViewModel() {
 
     private var dataCallback: DataCallback? = null
 
@@ -23,12 +26,14 @@ class ViewModel(private val model: Model) {
         model.init(jokeCallback)
     }
 
-    fun changeJokeStatus() {
-        model.changeJokeStatus(jokeCallback)
+    fun changeJokeStatus() = viewModelScope.launch {
+        val uiModel = model.changeJokeStatus()
+        dataCallback?.let { uiModel?.map(it) }
     }
 
-    fun getJoke() {
-        model.getJoke()
+    fun getJoke() = viewModelScope.launch {
+        val uiModel = model.getJoke()
+        dataCallback?.let { uiModel.map(it) }
     }
 
     fun clear() {
@@ -48,9 +53,9 @@ interface Model {
 
     fun chooseDataSource(cached: Boolean)
 
-    fun changeJokeStatus(jokeCallback: JokeCallback)
+    suspend fun changeJokeStatus(): JokeUiModel?
 
-    fun getJoke()
+    suspend fun getJoke(): JokeUiModel
 
     fun init(callback: JokeCallback)
 
