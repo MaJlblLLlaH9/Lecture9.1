@@ -23,7 +23,6 @@ class ViewModel(private val model: Model) : ViewModel() {
 
     fun init(callback: DataCallback) {
         dataCallback = callback
-        model.init(jokeCallback)
     }
 
     fun changeJokeStatus() = viewModelScope.launch {
@@ -38,7 +37,6 @@ class ViewModel(private val model: Model) : ViewModel() {
 
     fun clear() {
         dataCallback = null
-        model.clear()
     }
 }
 
@@ -57,9 +55,7 @@ interface Model {
 
     suspend fun getJoke(): JokeUiModel
 
-    fun init(callback: JokeCallback)
 
-    fun clear()
 }
 
 interface JokeCallback {

@@ -5,7 +5,9 @@ class Joke(
     private val type: String,
     private val text: String,
     private val punchline: String
-) {
+) : ChangeJoke {
+    override suspend fun change(changeJokeStatus: ChangeJokeStatus) =
+        changeJokeStatus.addOrRemove(id, this)
     fun toBaseJoke() = BaseJokeUiModel(text, punchline)
     fun toFavoriteJoke() = FavoriteJokeUiModel(text, punchline)
     fun toJokeRealm(): JokeRealm {
@@ -16,6 +18,4 @@ class Joke(
             it.text = text
         }
     }
-
-    suspend fun change(cacheDataSource: ChangeJokeStatus) = cacheDataSource.addOrRemove(id, this)
 }

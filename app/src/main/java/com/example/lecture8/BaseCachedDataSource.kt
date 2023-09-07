@@ -5,10 +5,10 @@ import io.realm.kotlin.where
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class BaseCachedDataSource(private val realm: Realm) : CacheDataSource {
+class BaseCachedDataSource(private val realmProvider: RealmProvider) : CacheDataSource {
 
     override suspend fun getJoke(): Result<Joke, Unit> {
-        realm.let {
+        realmProvider.provide().use {
             val jokes = it.where(JokeRealm::class.java).findAll()
             if (jokes.isEmpty()) {
                 return Result.Error(Unit)
