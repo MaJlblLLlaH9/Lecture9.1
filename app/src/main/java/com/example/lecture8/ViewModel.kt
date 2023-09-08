@@ -9,14 +9,6 @@ class ViewModel(private val model: Model) : ViewModel() {
 
     private var dataCallback: DataCallback? = null
 
-    private var jokeCallback = object : JokeCallback {
-        override fun provide(joke: JokeUiModel) {
-            dataCallback?.let {
-                joke.map(it)
-            }
-        }
-    }
-
     fun chooseFavorites(favorites: Boolean) {
         model.chooseDataSource(favorites)
     }
@@ -35,9 +27,6 @@ class ViewModel(private val model: Model) : ViewModel() {
         dataCallback?.let { uiModel.map(it) }
     }
 
-    fun clear() {
-        dataCallback = null
-    }
 }
 
 interface DataCallback {
