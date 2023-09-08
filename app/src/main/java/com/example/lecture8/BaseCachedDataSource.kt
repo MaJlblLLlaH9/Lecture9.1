@@ -1,7 +1,6 @@
 package com.example.lecture8
 
 import io.realm.Realm
-import io.realm.kotlin.where
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
