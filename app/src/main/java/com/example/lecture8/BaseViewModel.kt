@@ -21,12 +21,12 @@ class BaseViewModel(
 
     fun changeJokeStatus() = viewModelScope.launch {
         model.changeJokeStatus()?.let {
-            communication.showData(it.getData())
+          it.show(communication)
         }
     }
 
     fun getJoke() = viewModelScope.launch {
-        communication.showData(model.getJoke().getData())
+        model.getJoke().show(communication)
     }
 
     fun observe(owner: LifecycleOwner, observer: Observer<Pair<String, Int>>) =
@@ -40,7 +40,6 @@ interface Model {
     suspend fun changeJokeStatus(): JokeUiModel?
 
     suspend fun getJoke(): JokeUiModel
-
 
 }
 

@@ -7,7 +7,7 @@ abstract class JokeUiModel(private val text: String, private val punchline: Stri
 
     @DrawableRes
     abstract fun getIconResId(): Int
-    fun getData() =  Pair(text(),getIconResId())
+    fun show(communication: Communication) = communication.showData(Pair(text(), getIconResId()))
 }
 
 class BaseJokeUiModel(text: String, punchline: String) : JokeUiModel(text, punchline) {
