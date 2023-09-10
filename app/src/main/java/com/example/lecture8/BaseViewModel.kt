@@ -1,39 +1,36 @@
 package com.example.lecture8
 
 import androidx.annotation.DrawableRes
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class ViewModel(private val model: Model) : ViewModel() {
+class BaseViewModel(
+    private val model: Model,
+    private val communication: Communication
+) :
+    ViewModel() {
 
-    private var dataCallback: DataCallback? = null
 
     fun chooseFavorites(favorites: Boolean) {
         model.chooseDataSource(favorites)
     }
 
-    fun init(callback: DataCallback) {
-        dataCallback = callback
-    }
 
     fun changeJokeStatus() = viewModelScope.launch {
-        val uiModel = model.changeJokeStatus()
-        dataCallback?.let { uiModel?.map(it) }
+        model.changeJokeStatus()?.let {
+            communication.showData(it.getData())
+        }
     }
 
     fun getJoke() = viewModelScope.launch {
-        val uiModel = model.getJoke()
-        dataCallback?.let { uiModel.map(it) }
+        communication.showData(model.getJoke().getData())
     }
 
-}
-
-interface DataCallback {
-    fun provideText(text: String)
-
-    fun provideIconRes(@DrawableRes id: Int)
-
+    fun observe(owner: LifecycleOwner, observer: Observer<Pair<String, Int>>) =
+        communication.observe(owner, observer)
 }
 
 interface Model {
@@ -47,7 +44,3 @@ interface Model {
 
 }
 
-interface JokeCallback {
-
-    fun provide(joke: JokeUiModel)
-}

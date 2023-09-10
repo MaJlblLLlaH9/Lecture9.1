@@ -7,10 +7,7 @@ abstract class JokeUiModel(private val text: String, private val punchline: Stri
 
     @DrawableRes
     abstract fun getIconResId(): Int
-    fun map(callback: DataCallback) = callback.run {
-        provideText(text())
-        provideIconRes(getIconResId())
-    }
+    fun getData() =  Pair(text(),getIconResId())
 }
 
 class BaseJokeUiModel(text: String, punchline: String) : JokeUiModel(text, punchline) {

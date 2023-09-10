@@ -1,20 +1,13 @@
 package com.example.lecture8
 
 import android.app.Application
-import com.google.gson.Gson
 import io.realm.Realm
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
-import java.io.BufferedInputStream
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
-import java.net.UnknownHostException
 
 class JokeApp : Application() {
 
-    lateinit var viewModel: ViewModel
+    lateinit var viewModel: BaseViewModel
 
     override fun onCreate() {
         super.onCreate()
@@ -25,7 +18,7 @@ class JokeApp : Application() {
         val cachedJoke = BaseCachedJoke()
         val cacheDataSource = BaseCachedDataSource(BaseRealmProvider())
         val resourceManager = BaseResourceManager(this)
-        viewModel = ViewModel(
+        viewModel = BaseViewModel(
             BaseModel(
                 cacheDataSource,
                 CacheResultHandler(
@@ -40,7 +33,8 @@ class JokeApp : Application() {
                     ServiceUnavailable(resourceManager)
                 ),
                 cachedJoke
-            )
+            ),
+            BaseCommunication()
         )
     }
 }

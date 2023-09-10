@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: ViewModel
+    private lateinit var viewModel: BaseViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,21 +34,12 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
             viewModel.getJoke()
         }
-        viewModel.init(object : DataCallback {
-            override fun provideText(text: String) {
-                button.isEnabled = true
-                progressBar.visibility = View.INVISIBLE
-                textView.text = text
-            }
-
-            override fun provideIconRes(id: Int) {
-                changeButton.setImageResource(id)
-            }
-        })
-
+        viewModel.observe(this) { (text, drawableResId) ->
+            button.isEnabled = true
+            progressBar.visibility = View.INVISIBLE
+            textView.text = text
+            changeButton.setImageResource(drawableResId)
+        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 }
