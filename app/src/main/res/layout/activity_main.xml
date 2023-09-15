@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <com.example.lecture8.CorrectTextView
             android:id="@+id/textView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
             tools:text="@string/joke_or_error" />
 
 
-        <ImageButton
+        <com.example.lecture8.CorrectImageButton
             android:id="@+id/changeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -38,14 +38,14 @@
 
     </LinearLayout>
 
-    <ProgressBar
+    <com.example.lecture8.CorrectProgress
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true" />
 
-    <Button
+    <com.example.lecture8.CorrectButton
         android:id="@+id/buttonView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

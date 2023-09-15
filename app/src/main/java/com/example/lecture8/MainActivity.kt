@@ -12,15 +12,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         viewModel = (application as JokeApp).viewModel
-        val button = findViewById<Button>(R.id.buttonView)
-        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        val textView = findViewById<TextView>(R.id.textView)
+        val button = findViewById<CorrectButton>(R.id.buttonView)
+        val progressBar = findViewById<CorrectProgress>(R.id.progressBar)
+        val textView = findViewById<CorrectTextView>(R.id.textView)
         val checkBox = findViewById<CheckBox>(R.id.checkBox)
 
         checkBox.setOnCheckedChangeListener { _, isChecked ->
             viewModel.chooseFavorites(isChecked)
         }
-        val changeButton = findViewById<ImageView>(R.id.changeButton)
+        val changeButton = findViewById<CorrectImageButton>(R.id.changeButton)
 
         changeButton.setOnClickListener {
             viewModel.changeJokeStatus()
@@ -30,15 +30,11 @@ class MainActivity : AppCompatActivity() {
         progressBar.visibility = View.INVISIBLE
 
         button.setOnClickListener {
-            button.isEnabled = false
-            progressBar.visibility = View.VISIBLE
             viewModel.getJoke()
         }
-        viewModel.observe(this) { (text, drawableResId) ->
-            button.isEnabled = true
-            progressBar.visibility = View.INVISIBLE
-            textView.text = text
-            changeButton.setImageResource(drawableResId)
+
+        viewModel.observe(this) { state ->
+            state.showView(progressBar, button, textView, changeButton)
         }
     }
 
