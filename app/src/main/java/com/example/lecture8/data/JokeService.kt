@@ -1,6 +1,5 @@
-package com.example.lecture8
+package com.example.lecture8.data
 
-import retrofit2.Call
 import retrofit2.http.GET
 
 interface JokeService {

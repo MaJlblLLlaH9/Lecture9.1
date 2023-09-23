@@ -1,16 +1,16 @@
 package com.example.lecture8
 
 class BaseCachedJoke : CachedJoke {
-    private var cached: Joke? = null
-    override fun saveJoke(joke: Joke) {
+    private var cached: ChangeJoke = ChangeJoke.Empty()
+    override fun saveJoke(joke: JokeDataModel) {
         cached = joke
     }
 
     override fun clear() {
-        cached = null
+        cached = ChangeJoke.Empty()
     }
 
-    override suspend fun change(changeJokeStatus: ChangeJokeStatus): JokeUiModel? {
-        return cached?.change(changeJokeStatus)
+    override suspend fun change(changeJokeStatus: ChangeJokeStatus): JokeDataModel {
+        return cached.change(changeJokeStatus)
     }
 }

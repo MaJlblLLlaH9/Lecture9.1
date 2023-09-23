@@ -6,4 +6,6 @@
     <string name="joke_or_error">Joke or error</string>
     <string name="get_joke">Get joke</string>
     <string name="no_cached_jokes">No favorites jokes! Add one by heart icon</string>
+    <string name="generic_fail_message">Generic fail!</string>
+
 </resources>

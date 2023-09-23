@@ -1,4 +1,4 @@
-package com.example.lecture8
+package com.example.lecture8.data
 
 import io.realm.Realm
 

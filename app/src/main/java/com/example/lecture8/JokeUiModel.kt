@@ -3,11 +3,11 @@ package com.example.lecture8
 import androidx.annotation.DrawableRes
 
 abstract class JokeUiModel(private val text: String, private val punchline: String) {
-    private fun text() = "$text\n$punchline"
+    protected open fun text() = "$text\n$punchline"
 
     @DrawableRes
-    abstract fun getIconResId(): Int
-    fun show(communication: Communication) =
+    protected abstract fun getIconResId(): Int
+    open fun show(communication: Communication) =
         communication.showState(BaseViewModel.State.Initial(text(), getIconResId()))
 }
 
@@ -19,8 +19,11 @@ class FavoriteJokeUiModel(text: String, punchline: String) : JokeUiModel(text, p
     override fun getIconResId(): Int = R.drawable.ic_baseline_favorite_24
 }
 
-class FailedJokeUiModel(text: String) : JokeUiModel(text, "") {
+class FailedJokeUiModel(private val text: String) : JokeUiModel(text, "") {
+    override fun text() = text
     override fun getIconResId(): Int = 0
+    override fun show(communication: Communication) =
+        communication.showState(BaseViewModel.State.Failed(text(), getIconResId()))
 }
 
 interface JokeFailure {
@@ -36,6 +39,5 @@ class NoConnection(private val resourceManager: ResourceManager) : JokeFailure {
 }
 
 class ServiceUnavailable(private val resourceManager: ResourceManager) : JokeFailure {
-    override fun getMessage(): String = resourceManager.getString(R.string.service_unavailable)
+    override fun getMessage() = resourceManager.getString(R.string.no_connection)
 }
-

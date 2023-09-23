@@ -1,6 +1,6 @@
 //package com.example.lecture8
 //
-//class TestModel(resourceManager: ResourceManager) : Model {
+//class TestModel(resourceManager: ResourceManager) : JokeRepository {
 //    private var callback: JokeCallback? = null
 //    private var count = 0
 //    private val noConnection = NoConnection(resourceManager)

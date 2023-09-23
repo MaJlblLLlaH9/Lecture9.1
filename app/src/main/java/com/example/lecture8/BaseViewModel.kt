@@ -5,32 +5,35 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.lecture8.data.JokeRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class BaseViewModel(
-    private val model: Model,
-    private val communication: Communication
+    private val interactor: JokeInteractor,
+    private val communication: Communication,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main
 ) :
     ViewModel() {
 
 
     fun chooseFavorites(favorites: Boolean) {
-        model.chooseDataSource(favorites)
+        interactor.getFavoriteJokes(favorites)
     }
 
 
     fun changeJokeStatus() = viewModelScope.launch {
-        model.changeJokeStatus()?.let {
-            it.show(communication)
-        }
+        if (communication.isState(State.INITIAL))
+            interactor.changeFavorites().to().show(communication)
     }
 
-    fun getJoke() = viewModelScope.launch {
+    fun getJoke() = viewModelScope.launch(dispatcher) {
         communication.showState(State.Progress)
-        model.getJoke().show(communication)
+        interactor.getJoke().to().show(communication)
     }
 
-    fun observe(owner: LifecycleOwner, observer: Observer<BaseViewModel.State>) =
+    fun observe(owner: LifecycleOwner, observer: Observer<State>) =
         communication.observe(owner, observer)
 
     interface Show<T> {
@@ -54,6 +57,23 @@ class BaseViewModel(
     }
 
     sealed class State {
+        protected abstract val type: Int
+
+        companion object {
+            const val INITIAL = 0
+            const val PROGRESS = 1
+            const val FAILED = 2
+        }
+
+        object Progress : State() {
+            override val type: Int = PROGRESS
+            override fun show(progress: ShowView, button: EnableView) {
+                progress.show(true)
+                button.enable(false)
+            }
+        }
+
+        fun isType(type: Int): Boolean = this.type == type
         fun showView(
             progress: ShowView,
             button: EnableView,
@@ -67,14 +87,7 @@ class BaseViewModel(
         protected open fun show(progress: ShowView, button: EnableView) {}
         protected open fun show(textView: ShowText, imageButton: ShowImage) {}
 
-        object Progress : State() {
-            override fun show(progress: ShowView, button: EnableView) {
-                progress.show(true)
-                button.enable(false)
-            }
-        }
-
-        data class Initial(val text: String, @DrawableRes val id: Int) : State() {
+        abstract class Info(private val text: String, @DrawableRes private val id: Int) : State() {
             override fun show(progress: ShowView, button: EnableView) {
                 progress.show(false)
                 button.enable(true)
@@ -85,16 +98,14 @@ class BaseViewModel(
                 imageButton.show(id)
             }
         }
+
+        class Initial(text: String, @DrawableRes private val id: Int) : Info(text, id) {
+            override val type = INITIAL
+        }
+
+        class Failed(text: String, @DrawableRes private val id: Int) : Info(text, id) {
+            override val type = FAILED
+        }
     }
-}
-
-interface Model {
-
-    fun chooseDataSource(cached: Boolean)
-
-    suspend fun changeJokeStatus(): JokeUiModel?
-
-    suspend fun getJoke(): JokeUiModel
-
 }
 
