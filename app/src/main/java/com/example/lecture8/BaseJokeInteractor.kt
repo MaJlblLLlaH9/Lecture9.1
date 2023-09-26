@@ -27,7 +27,6 @@ class BaseJokeInteractor(
         }
     }
 
-    override fun getFavoriteJokes(favorites: Boolean) {
+    override fun getFavoriteJokes(favorites: Boolean) =
         repository.chooseDataSource(favorites)
-    }
 }
