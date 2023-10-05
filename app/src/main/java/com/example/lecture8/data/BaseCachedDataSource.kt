@@ -2,6 +2,7 @@ package com.example.lecture8.data
 
 import com.example.lecture8.*
 import com.example.lecture8.domain.NoCachedException
+import io.realm.Realm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -22,7 +23,7 @@ class BaseCachedDataSource(
 
     override suspend fun addOrRemove(id: Int, joke: JokeDataModel): JokeDataModel =
         withContext(Dispatchers.IO) {
-            realmProvider.provide().use {
+            Realm.getDefaultInstance().use {
                 val jokeRealm = it.where(JokeRealmModel::class.java).equalTo("id", id).findFirst()
                 return@withContext if (jokeRealm == null) {
                     it.executeTransaction { transaction ->
