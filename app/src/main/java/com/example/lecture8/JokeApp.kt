@@ -1,10 +1,7 @@
 package com.example.lecture8
 
 import android.app.Application
-import com.example.lecture8.data.BaseCachedDataSource
-import com.example.lecture8.data.BaseCloudDataSource
-import com.example.lecture8.data.BaseRealmProvider
-import com.example.lecture8.data.JokeService
+import com.example.lecture8.data.*
 import io.realm.Realm
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -20,9 +17,9 @@ class JokeApp : Application() {
         val retrofit = Retrofit.Builder().baseUrl("https://www.google.com")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val cachedJoke = BaseCachedJoke()
+
         val cacheDataSource = BaseCachedDataSource(BaseRealmProvider(), JokeRealmMapper())
-        val cloudDataSource = BaseCloudDataSource(retrofit.create(JokeService::class.java))
+        val cloudDataSource = NewJokeCloudDataSource(retrofit.create(NewJokeService::class.java))
         val resourceManager = BaseResourceManager(this)
         val repository = BaseJokeRepository(cacheDataSource, cloudDataSource, BaseCachedJoke())
         val interactor =
